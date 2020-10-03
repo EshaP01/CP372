@@ -1,27 +1,17 @@
 public class BookEntry {
-    private String ISBN;
-    private String TITLE;
-    private String AUTHOR;
-    private String PUBLISHER;
-    private int YEAR;
-
-    public BookEntry(String ISBN, String TITLE, String AUTHOR, String PUBLISHER, int YEAR) {
-        this.ISBN = ISBN;
-        this.TITLE = TITLE;
-        this.AUTHOR = AUTHOR;
-        this.PUBLISHER = PUBLISHER;
-        this.YEAR = YEAR;
-    }
+    private String ISBN = "";
+    private String TITLE = "";
+    private String AUTHOR = "";
+    private String PUBLISHER = "";
+    private int YEAR = 0;
 
     @Override
     public String toString() {
-        return "BookEntry{" +
-                "ISBN='" + ISBN + '\'' +
-                ", TITLE='" + TITLE + '\'' +
-                ", AUTHOR='" + AUTHOR + '\'' +
-                ", PUBLISHER='" + PUBLISHER + '\'' +
-                ", YEAR=" + YEAR +
-                '}';
+        return "ISBN: " + ISBN +
+                "\r\nTITLE: " + TITLE +
+                "\r\nAUTHOR: " + AUTHOR +
+                "\r\nPUBLISHER: " + PUBLISHER +
+                "\r\nYEAR: " + YEAR;
     }
 
     public String getISBN() {
