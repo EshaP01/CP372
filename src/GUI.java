@@ -62,50 +62,55 @@ public class GUI extends JFrame {
     private void btnSubmitHandler(ActionEvent e) {
         if (clientHandler.isConnected()) {
             try {
+                String ISBN;
+                // Handle Title
+                String TITLE = txtTITLE.getText().trim();
+                // Handle Author
+                String AUTHOR = txtAUTHOR.getText().trim();
+                // Handle Publisher
+                String PUBLISHER = txtPUBLISHER.getText().trim();
+                // Handle Year
+                int YEAR = 0;
+                if (txtYEAR.getText().length() > 0)
+                    try {
+                        YEAR = Integer.parseInt(txtYEAR.getText());
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(this, "Invalid Year", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                // Handle All Get request
                 if (comboBoxRequests.getSelectedItem() == Request.GET && checkboxAll.isSelected()) {
                     txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", "", 0, true));
                     return;
                 }
-                // Handle ISBN
-                String ISBN = txtISBN.getText().replace("-", "").trim();
+
+                ISBN = txtISBN.getText().replace("-", "").trim();
+
                 if (comboBoxRequests.getSelectedItem() == Request.SUBMIT || comboBoxRequests.getSelectedItem() == Request.UPDATE)
                     if (ISBN.length() == 0) {
                         JOptionPane.showMessageDialog(this, "Please enter an ISBN", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                // Check if GET request and empty fields
+                if (comboBoxRequests.getSelectedItem() == Request.GET)
+                    if (ISBN.length() == 0 && TITLE.length() == 0 && AUTHOR.length() == 0 && PUBLISHER.length() == 0 && YEAR == 0) {
+                        JOptionPane.showMessageDialog(this, "Please enter an field to search or select All", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
                 // Check if ISBN is correct length at least
                 if (ISBN.length() == 13) {
-                    // Calculate final digit and compare for verification
-                    int calculatedDigit = 0;
-                    for (int i = 0; i < 12; i++) {
-                        final int i1 = Integer.parseInt(ISBN.toCharArray()[i] + "");
-                        if (i % 2 == 0)
-                            calculatedDigit += i1;
-                        else
-                            calculatedDigit += 3 * i1;
-                    }
-                    calculatedDigit = 10 - (calculatedDigit % 10);
+                    int calculatedDigit = Util.calculateISBNDigit(ISBN);
                     if (Integer.parseInt(ISBN.toCharArray()[12] + "") == calculatedDigit) {
-                        // Handle Title
-                        String TITLE = txtTITLE.getText().trim();
-                        // Handle Author
-                        String AUTHOR = txtAUTHOR.getText().trim();
-                        // Handle Publisher
-                        String PUBLISHER = txtPUBLISHER.getText().trim();
-                        // Handle Year
-                        int YEAR = 0;
-                        if (txtYEAR.getText().length() > 0)
-                            try {
-                                YEAR = Integer.parseInt(txtYEAR.getText());
-                            } catch (NumberFormatException exception) {
-                                JOptionPane.showMessageDialog(this, "Invalid Year", "Error", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
                         txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false));
                         return;
                     }
                 }
-                JOptionPane.showMessageDialog(this, "Invalid ISBN", "Error", JOptionPane.ERROR_MESSAGE);
+                // If ISBN was left blank, let user continue
+                if (ISBN.length() == 0)
+                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false));
+                else
+                    JOptionPane.showMessageDialog(this, "Invalid ISBN", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException exception) {
                 JOptionPane.showMessageDialog(this, "Invalid ISBN", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException exception) {
@@ -182,7 +187,7 @@ public class GUI extends JFrame {
         lblRequest = new JLabel("Request:");
         panelRequest.add(lblRequest);
 
-        comboBoxRequests = new JComboBox<Request>(Request.values());
+        comboBoxRequests = new JComboBox<>(Request.values());
         comboBoxRequests.addActionListener(this::comboBoxRequestsHandler);
         panelRequest.add(comboBoxRequests);
 

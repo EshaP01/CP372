@@ -1,12 +1,12 @@
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.Socket;
+import java.util.ArrayList;
 
 public class ServerThread extends Thread {
     private final Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private ArrayList<BookEntry> bookEntries;
+    private final ArrayList<BookEntry> bookEntries;
 
     public ServerThread(String name, Socket socket, ArrayList<BookEntry> bookEntries) {
         super(name);
@@ -43,7 +43,7 @@ public class ServerThread extends Thread {
 
 
     private String handleSubmit(String[] data) {
-        String message = "";
+        String message;
         BookEntry bookEntry = new BookEntry();
         for (String line : data) {
             line = line.trim();
@@ -51,6 +51,10 @@ public class ServerThread extends Thread {
             String value;
             switch (words[0]) {
                 case "ISBN":
+                    if (Util.findByISBN(bookEntries, words[1]) != null) {
+                        message = "ERROR: Book already exists";
+                        return message;
+                    }
                     bookEntry.setISBN(words[1]);
                     break;
                 case "TITLE":
@@ -78,27 +82,57 @@ public class ServerThread extends Thread {
     }
 
     private String handleGet(String[] data) {
-        String message = "";
-        return message;
+        StringBuilder message = new StringBuilder();
+        ArrayList<ArrayList<BookEntry>> bookEntriesList = new ArrayList<>();
+        for (String line : data) {
+            line = line.trim();
+            String[] words = line.split(" ");
+            String value = line.substring(words[0].length()).trim();
+            switch (words[0]) {
+                case "ALL":
+                    for (BookEntry bookEntry : bookEntries)
+                        message.append(bookEntry.toString());
+                    return message.toString();
+                case "ISBN":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "ISBN", value));
+                    break;
+                case "TITLE":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "TITLE", value));
+                    break;
+                case "AUTHOR":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "AUTHOR", value));
+                    break;
+                case "PUBLISHER":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "PUBLISHER", value));
+                    break;
+                case "YEAR":
+                    if (Integer.parseInt(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "YEAR", value));
+                    break;
+            }
+        }
+        ArrayList<BookEntry> intersection = Util.intersection(bookEntriesList);
+        if (intersection == null)
+            return "No books found.";
+        for (BookEntry bookEntry : intersection)
+            message.append(bookEntry.toString());
+        return message.toString();
     }
 
     private String handleUpdate(String[] data) {
         String message;
-        ArrayList<BookEntry> foundBooks;
         BookEntry foundBook = null;
-        outer:
         for (String line : data) {
             line = line.trim();
             String[] words = line.split(" ");
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
                 case "ISBN":
-                    foundBooks = Util.findByAttribute(bookEntries, "ISBN", value);
-                    if (foundBooks.size() == 1) {
-                        foundBook = foundBooks.get(0);
-                    } else {
-                        break outer;
-                    }
+                    foundBook = Util.findByISBN(bookEntries, value);
                     break;
                 case "TITLE":
                     if (foundBook != null)
@@ -122,7 +156,7 @@ public class ServerThread extends Thread {
         if (foundBook != null)
             message = "-----Successfully updated-----\n" + foundBook.toString();
         else
-            message = "The book does not exist";
+            message = "ERROR: The book does not exist";
         return message;
     }
 
