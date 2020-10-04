@@ -1,5 +1,5 @@
 import java.io.*;
-import java.net.Socket;
+import java.net.*;
 import java.util.ArrayList;
 
 public class ServerThread extends Thread {
@@ -160,8 +160,26 @@ public class ServerThread extends Thread {
         return message;
     }
 
+    // TODO: Handle empty fields, right now deletes everything individually each field
     private String handleRemove(String[] data) {
         String message = "";
+        ArrayList<BookEntry> foundBooks;
+        int removedCount = 0;
+        for (String line : data) {
+            line = line.trim();
+            String[] words = line.split(" ");
+            String value = line.substring(words[0].length()).trim();
+            if (words[0].equals("ISBN") || words[0].equals("TITLE") || words[0].equals("AUTHOR") || words[0].equals("PUBLISHER") || words[0].equals("YEAR")) {
+                foundBooks = Util.findByAttribute(bookEntries, words[0], value);
+                if (foundBooks != null) {
+                    for (BookEntry entry : foundBooks) {
+                        bookEntries.remove(entry);
+                        removedCount++;
+                    }
+                }
+            }
+        }
+        message = "Removed " + removedCount + " books";
         return message;
     }
 
