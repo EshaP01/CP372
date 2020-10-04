@@ -80,7 +80,7 @@ public class GUI extends JFrame {
                     }
                 // Handle All Get request
                 if (comboBoxRequests.getSelectedItem() == Request.GET && checkboxAll.isSelected()) {
-                    txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", "", 0, true));
+                    txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", "", 0, true, checkboxBibtex.isSelected()));
                     return;
                 }
 
@@ -94,7 +94,7 @@ public class GUI extends JFrame {
                 // Check if GET request and empty fields
                 if (comboBoxRequests.getSelectedItem() == Request.GET)
                     if (ISBN.length() == 0 && TITLE.length() == 0 && AUTHOR.length() == 0 && PUBLISHER.length() == 0 && YEAR == 0) {
-                        JOptionPane.showMessageDialog(this, "Please enter an field to search or select All", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Please enter a field to search or select All", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -102,13 +102,13 @@ public class GUI extends JFrame {
                 if (ISBN.length() == 13) {
                     int calculatedDigit = Util.calculateISBNDigit(ISBN);
                     if (Integer.parseInt(ISBN.toCharArray()[12] + "") == calculatedDigit) {
-                        txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false));
+                        txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false, checkboxBibtex.isSelected()));
                         return;
                     }
                 }
                 // If ISBN was left blank, let user continue
                 if (ISBN.length() == 0)
-                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false));
+                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false, checkboxBibtex.isSelected()));
                 else
                     JOptionPane.showMessageDialog(this, "Invalid ISBN", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException exception) {

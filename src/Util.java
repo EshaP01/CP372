@@ -57,16 +57,13 @@ public class Util {
     public static ArrayList<BookEntry> intersection(ArrayList<ArrayList<BookEntry>> bookEntriesList) {
         ArrayList<BookEntry> intersection = null;
         for (ArrayList<BookEntry> bookEntries : bookEntriesList) {
-            if (intersection == null) {
-                if (bookEntries != null)
-                    intersection = bookEntries;
-            } else {
-                if (bookEntries != null)
-                    intersection.retainAll(bookEntries);
-                else {
-                    intersection = null;
-                    break;
-                }
+            intersection = intersection == null ? bookEntries : intersection;
+            if (intersection == null) break;
+            if (bookEntries != null)
+                intersection.retainAll(bookEntries);
+            else {
+                intersection = null;
+                break;
             }
         }
         return intersection;

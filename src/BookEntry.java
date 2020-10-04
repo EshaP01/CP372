@@ -7,13 +7,11 @@ public class BookEntry {
 
     @Override
     public String toString() {
-        return "BookEntry{" +
-                "ISBN='" + ISBN + '\'' +
-                ", TITLE='" + TITLE + '\'' +
-                ", AUTHOR='" + AUTHOR + '\'' +
-                ", PUBLISHER='" + PUBLISHER + '\'' +
-                ", YEAR=" + YEAR +
-                '}';
+        return "ISBN: " + ISBN +
+                "\nTITLE: " + TITLE +
+                "\nAUTHOR: " + AUTHOR +
+                "\nPUBLISHER: " + PUBLISHER +
+                "\nYEAR: " + YEAR + "\r\n";
     }
 
     public String getISBN() {

@@ -35,7 +35,7 @@ public class ClientHandler {
     }
 
     public String sendMessage(Request request, String ISBN, String TITLE, String AUTHOR, String PUBLISHER, int YEAR,
-                              boolean all) throws IOException {
+                              boolean all, boolean bibtex) throws IOException {
         String requestData = processRequest(request, ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, all);
         out.println(requestData + "\r\n\\EOF");
         String response = "";
@@ -43,6 +43,30 @@ public class ClientHandler {
         while (line != null && !line.contains("\\EOF")) {
             response = response.concat(line + "\r\n");
             line = in.readLine();
+        }
+        if (bibtex) {
+            String[] splitResponse = response.split("\r\n");
+            if (splitResponse.length > 2) {
+                response = "";
+                for (String s : splitResponse) {
+                    String[] splitLine = s.split(" ");
+                    if (splitLine[0].contains("ISBN:")) {
+                        response = response.concat("@BookEntry{\r\n\tISBN\t= \"" + splitLine[1] + "\",\r\n");
+                    }
+                    if (splitLine[0].contains("TITLE:")) {
+                        response = response.concat("\tTITLE\t= \"" + splitLine[1] + "\",\r\n");
+                    }
+                    if (splitLine[0].contains("AUTHOR:")) {
+                        response = response.concat("\tAUTHOR\t= \"" + splitLine[1] + "\",\r\n");
+                    }
+                    if (splitLine[0].contains("PUBLISHER:")) {
+                        response = response.concat("\tPUBLISHER\t= \"" + splitLine[1] + "\",\r\n");
+                    }
+                    if (splitLine[0].contains("YEAR:")) {
+                        response = response.concat("\tYEAR\t= \"" + splitLine[1] + "\",\r\n}\r\n");
+                    }
+                }
+            }
         }
         return response;
     }

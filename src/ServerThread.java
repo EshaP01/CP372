@@ -41,7 +41,6 @@ public class ServerThread extends Thread {
         }
     }
 
-
     private String handleSubmit(String[] data) {
         String message;
         BookEntry bookEntry = new BookEntry();
@@ -90,8 +89,10 @@ public class ServerThread extends Thread {
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
                 case "ALL":
-                    for (BookEntry bookEntry : bookEntries)
+                    for (BookEntry bookEntry : bookEntries) {
                         message.append(bookEntry.toString());
+                        message.append("\r\n");
+                    }
                     return message.toString();
                 case "ISBN":
                     if (value.length() > 0)
@@ -118,8 +119,11 @@ public class ServerThread extends Thread {
         ArrayList<BookEntry> intersection = Util.intersection(bookEntriesList);
         if (intersection == null)
             return "No books found.";
-        for (BookEntry bookEntry : intersection)
+        for (BookEntry bookEntry : intersection) {
             message.append(bookEntry.toString());
+            message.append("\r\n");
+        }
+
         return message.toString();
     }
 
@@ -160,29 +164,46 @@ public class ServerThread extends Thread {
         return message;
     }
 
-    // TODO: Handle empty fields, right now deletes everything individually each field
     private String handleRemove(String[] data) {
-        String message = "";
-        ArrayList<BookEntry> foundBooks;
+        String message;
         int removedCount = 0;
+        ArrayList<ArrayList<BookEntry>> bookEntriesList = new ArrayList<>();
         for (String line : data) {
             line = line.trim();
             String[] words = line.split(" ");
             String value = line.substring(words[0].length()).trim();
-            if (words[0].equals("ISBN") || words[0].equals("TITLE") || words[0].equals("AUTHOR") || words[0].equals("PUBLISHER") || words[0].equals("YEAR")) {
-                foundBooks = Util.findByAttribute(bookEntries, words[0], value);
-                if (foundBooks != null) {
-                    for (BookEntry entry : foundBooks) {
-                        bookEntries.remove(entry);
-                        removedCount++;
-                    }
-                }
+            switch (words[0]) {
+                case "ISBN":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "ISBN", value));
+                    break;
+                case "TITLE":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "TITLE", value));
+                    break;
+                case "AUTHOR":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "AUTHOR", value));
+                    break;
+                case "PUBLISHER":
+                    if (value.length() > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "PUBLISHER", value));
+                    break;
+                case "YEAR":
+                    if (Integer.parseInt(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "YEAR", value));
+                    break;
             }
         }
+        ArrayList<BookEntry> intersection = Util.intersection(bookEntriesList);
+        if (intersection != null)
+            for (BookEntry bookEntry : intersection) {
+                bookEntries.remove(bookEntry);
+                removedCount++;
+            }
         message = "Removed " + removedCount + " books";
         return message;
     }
-
 
     private void listen() {
         String line, inMessage, outMessage;
