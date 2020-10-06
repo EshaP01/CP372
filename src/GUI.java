@@ -92,11 +92,18 @@ public class GUI extends JFrame {
                         return;
                     }
                 // Check if GET request and empty fields
-                if (comboBoxRequests.getSelectedItem() == Request.GET)
+                if (comboBoxRequests.getSelectedItem() == Request.GET || comboBoxRequests.getSelectedItem() == Request.REMOVE)
                     if (ISBN.length() == 0 && TITLE.length() == 0 && AUTHOR.length() == 0 && PUBLISHER.length() == 0 && YEAR == 0) {
                         JOptionPane.showMessageDialog(this, "Please enter a field to search or select All", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+
+                if (comboBoxRequests.getSelectedItem() == Request.REMOVE) {
+                    int response = JOptionPane.showConfirmDialog(this, "Confirm remove");
+                    if (response == JOptionPane.NO_OPTION || response == JOptionPane.CANCEL_OPTION) {
+                        return;
+                    }
+                }
 
                 // Check if ISBN is correct length at least
                 if (ISBN.length() == 13) {

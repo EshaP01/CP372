@@ -51,19 +51,22 @@ public class ClientHandler {
                 for (String s : splitResponse) {
                     String[] splitLine = s.split(" ");
                     if (splitLine[0].contains("ISBN:")) {
-                        response = response.concat("@BookEntry{\r\n\tISBN\t= \"" + splitLine[1] + "\",\r\n");
+                        response = response.concat("@BookEntry{\r\n\tISBN\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
                     if (splitLine[0].contains("TITLE:")) {
-                        response = response.concat("\tTITLE\t= \"" + splitLine[1] + "\",\r\n");
+                        response = response.concat("\tTITLE\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
                     if (splitLine[0].contains("AUTHOR:")) {
-                        response = response.concat("\tAUTHOR\t= \"" + splitLine[1] + "\",\r\n");
+                        response = response.concat("\tAUTHOR\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
                     if (splitLine[0].contains("PUBLISHER:")) {
-                        response = response.concat("\tPUBLISHER\t= \"" + splitLine[1] + "\",\r\n");
+                        response = response.concat("\tPUBLISHER\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
                     if (splitLine[0].contains("YEAR:")) {
-                        response = response.concat("\tYEAR\t= \"" + splitLine[1] + "\",\r\n}\r\n");
+                        if (s.substring(splitLine[0].length()).trim().equals("0"))
+                            response = response.concat("\tYEAR\t= \"No Value\",\r\n}\r\n");
+                        else
+                            response = response.concat("\tYEAR\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
                     }
                 }
             }

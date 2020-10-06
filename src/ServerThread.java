@@ -89,6 +89,8 @@ public class ServerThread extends Thread {
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
                 case "ALL":
+                    if (bookEntries.size() == 0)
+                        return "No books found.";
                     for (BookEntry bookEntry : bookEntries) {
                         message.append(bookEntry.toString());
                         message.append("\r\n");
@@ -139,21 +141,22 @@ public class ServerThread extends Thread {
                     foundBook = Util.findByISBN(bookEntries, value);
                     break;
                 case "TITLE":
-                    if (foundBook != null)
+                    if (foundBook != null && value.length() > 0)
                         foundBook.setTITLE(value);
                     break;
                 case "AUTHOR":
-                    if (foundBook != null)
+                    if (foundBook != null && value.length() > 0)
                         foundBook.setAUTHOR(value);
 
                     break;
                 case "PUBLISHER":
-                    if (foundBook != null)
+                    if (foundBook != null && value.length() > 0)
                         foundBook.setPUBLISHER(value);
                     break;
                 case "YEAR":
-                    if (foundBook != null)
-                        foundBook.setYEAR(Integer.parseInt(value));
+                    if (foundBook != null && value.length() > 0)
+                        if (Integer.parseInt(value) != 0)
+                            foundBook.setYEAR(Integer.parseInt(value));
                     break;
             }
         }
