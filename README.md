@@ -7,12 +7,12 @@ This app is a 2 part server + client setup, you can run the server locally or ho
 ```
 REQUEST\r\n
 ALL
-\\EOF
+\EOF
 or 
-ISBN \[ISBN\]
-TITLE \[TITLE\]
-AUTHOR \[AUTHOR\]
-PUBLISHER \[PUBLISHER\]
-YEAR \[YEAR\]
-\\EOF
+ISBN [ISBN]
+TITLE [TITLE]
+AUTHOR [AUTHOR]
+PUBLISHER [PUBLISHER]
+YEAR [YEAR]
+\EOF
 ```
