@@ -9,7 +9,7 @@ public class GUI extends JFrame {
     private final ClientHandler clientHandler;
 
     public GUI() {
-        setTitle("CP372 Assignment 1 App");
+        setTitle("CP372 Assignment 1");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 800, 500);
         clientHandler = new ClientHandler();
@@ -40,19 +40,23 @@ public class GUI extends JFrame {
     }
 
     private void checkboxAllHandler(ActionEvent e) {
-        txtISBN.setEnabled(!checkboxAll.isSelected());
-        txtTITLE.setEnabled(!checkboxAll.isSelected());
-        txtAUTHOR.setEnabled(!checkboxAll.isSelected());
-        txtPUBLISHER.setEnabled(!checkboxAll.isSelected());
-        txtYEAR.setEnabled(!checkboxAll.isSelected());
+        txtSTATUS.setEnabled(!checkboxAll.isSelected());
+        txtMESSAGE.setEnabled(!checkboxAll.isSelected());
+        txtCOLOR.setEnabled(!checkboxAll.isSelected());
+        txtWIDTH.setEnabled(!checkboxAll.isSelected());
+        txtHEIGHT.setEnabled(!checkboxAll.isSelected());
+        txtCoordinateX.setEnabled(!checkboxAll.isSelected());
+        txtCoordinateY.setEnabled(!checkboxAll.isSelected());
     }
 
     private void btnClearFieldsHandler(ActionEvent e) {
-        txtISBN.setText("");
-        txtTITLE.setText("");
-        txtAUTHOR.setText("");
-        txtPUBLISHER.setText("");
-        txtYEAR.setText("");
+        txtSTATUS.setText("");
+        txtMESSAGE.setText("");
+        txtCOLOR.setText("");
+        txtHEIGHT.setText("");
+        txtWIDTH.setText("");
+        txtCoordinateX.setText("");
+        txtCoordinateY.setText("");
     }
 
     private void btnClearOutputHandler(ActionEvent e) {
@@ -62,64 +66,79 @@ public class GUI extends JFrame {
     private void btnSubmitHandler(ActionEvent e) {
         if (clientHandler.isConnected()) {
             try {
-                String ISBN;
+                String STATUS;
                 // Handle Title
-                String TITLE = txtTITLE.getText().trim();
+                String MESSAGE = txtMESSAGE.getText().trim();
                 // Handle Author
-                String AUTHOR = txtAUTHOR.getText().trim();
-                // Handle Publisher
-                String PUBLISHER = txtPUBLISHER.getText().trim();
+                String COLOR = txtCOLOR.getText().trim();
                 // Handle Year
-                int YEAR = 0;
-                if (txtYEAR.getText().length() > 0)
+                Double HEIGHT = 0.0;
+                if (txtHEIGHT.getText().length() > 0.0)
                     try {
-                        YEAR = Integer.parseInt(txtYEAR.getText());
+                        HEIGHT = Double.parseDouble(txtHEIGHT.getText());
                     } catch (NumberFormatException exception) {
-                        JOptionPane.showMessageDialog(this, "Invalid Year", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Invalid Height", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                Double WIDTH = 0.0;
+                if (txtWIDTH.getText().length() > 0.0)
+                    try {
+                        WIDTH = Double.parseDouble(txtWIDTH.getText());
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(this, "Invalid Width", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                Double CoordinateX = 0.0;
+                if (txtCoordinateX.getText().length() > 0.0)
+                    try {
+                        CoordinateX = Double.parseDouble(txtCoordinateX.getText());
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(this, "Invalid Coordinate X", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                Double CoordinateY = 0.0;
+                if (txtCoordinateY.getText().length() > 0.0)
+                    try {
+                        CoordinateY = Double.parseDouble(txtCoordinateY.getText());
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(this, "Invalid Coordinate Y", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 // Handle All Get request
                 if (comboBoxRequests.getSelectedItem() == Request.GET && checkboxAll.isSelected()) {
-                    txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", "", 0, true, checkboxBibtex.isSelected()));
+                    txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", 0.0, 0.0, 0.0, 0.0, true, checkboxBibtex.isSelected()));
                     return;
                 }
 
-                ISBN = txtISBN.getText().replace("-", "").trim();
+                STATUS = txtSTATUS.getText().replace("-", "").trim();
 
                 if (comboBoxRequests.getSelectedItem() == Request.SUBMIT || comboBoxRequests.getSelectedItem() == Request.UPDATE)
-                    if (ISBN.length() == 0) {
-                        JOptionPane.showMessageDialog(this, "Please enter an ISBN", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (STATUS.length() == 0) {
+                        JOptionPane.showMessageDialog(this, "Please enter a Status (Pinned/Unpinned)", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 // Check if GET request and empty fields
                 if (comboBoxRequests.getSelectedItem() == Request.GET || comboBoxRequests.getSelectedItem() == Request.REMOVE)
-                    if (ISBN.length() == 0 && TITLE.length() == 0 && AUTHOR.length() == 0 && PUBLISHER.length() == 0 && YEAR == 0) {
-                        JOptionPane.showMessageDialog(this, "Please enter a field to search or select All", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (STATUS.length() == 0 && MESSAGE.length() == 0 && COLOR.length() == 0 && HEIGHT == 0 && WIDTH ==0 && CoordinateX == 0 && CoordinateY == 0) {
+                        JOptionPane.showMessageDialog(this, "Please enter a field to search ", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                 if (comboBoxRequests.getSelectedItem() == Request.REMOVE) {
-                    int response = JOptionPane.showConfirmDialog(this, "Confirm remove");
+                    int response = JOptionPane.showConfirmDialog(this, "Remove Confirmation");
                     if (response == JOptionPane.NO_OPTION || response == JOptionPane.CANCEL_OPTION) {
                         return;
                     }
                 }
 
-                // Check if ISBN is correct length at least
-                if (ISBN.length() == 13) {
-                    int calculatedDigit = Util.calculateISBNDigit(ISBN);
-                    if (Integer.parseInt(ISBN.toCharArray()[12] + "") == calculatedDigit) {
-                        txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false, checkboxBibtex.isSelected()));
-                        return;
-                    }
-                }
+                
                 // If ISBN was left blank, let user continue
-                if (ISBN.length() == 0)
-                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, false, checkboxBibtex.isSelected()));
+                if (STATUS.length() == 0)
+                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), STATUS, MESSAGE, COLOR, HEIGHT, WIDTH, CoordinateX, CoordinateY, false, checkboxBibtex.isSelected()));
                 else
-                    JOptionPane.showMessageDialog(this, "Invalid ISBN", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Invalid Status", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException exception) {
-                JOptionPane.showMessageDialog(this, "Invalid ISBN", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid Status", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -203,60 +222,82 @@ public class GUI extends JFrame {
         panelLeft.add(panelFields, BorderLayout.CENTER);
         panelFields.setLayout(new BoxLayout(panelFields, BoxLayout.Y_AXIS));
 
-        panelISBN = new JPanel();
-        panelFields.add(panelISBN);
-        panelISBN.setLayout(new GridLayout(0, 2, 0, 0));
+        panelSTATUS = new JPanel();
+        panelFields.add(panelSTATUS);
+        panelSTATUS.setLayout(new GridLayout(0, 2, 0, 0));
 
-        lblISBN = new JLabel("ISBN:");
-        panelISBN.add(lblISBN);
+        lblSTATUS = new JLabel("STATUS:");
+        panelSTATUS.add(lblSTATUS);
 
-        txtISBN = new JTextField();
-        panelISBN.add(txtISBN);
-        txtISBN.setColumns(10);
+        txtSTATUS = new JTextField();
+        panelSTATUS.add(txtSTATUS);
+        txtSTATUS.setColumns(10);
 
-        panelTITLE = new JPanel();
-        panelFields.add(panelTITLE);
-        panelTITLE.setLayout(new GridLayout(0, 2, 0, 0));
+        panelMESSAGE = new JPanel();
+        panelFields.add(panelMESSAGE);
+        panelMESSAGE.setLayout(new GridLayout(0, 2, 0, 0));
 
-        lblTITLE = new JLabel("TITLE:");
-        panelTITLE.add(lblTITLE);
+        lblMESSAGE = new JLabel("MESSAGE:");
+        panelMESSAGE.add(lblMESSAGE);
 
-        txtTITLE = new JTextField();
-        panelTITLE.add(txtTITLE);
-        txtTITLE.setColumns(10);
+        txtMESSAGE = new JTextField();
+        panelMESSAGE.add(txtMESSAGE);
+        txtMESSAGE.setColumns(10);
 
-        panelAUTHOR = new JPanel();
-        panelFields.add(panelAUTHOR);
-        panelAUTHOR.setLayout(new GridLayout(0, 2, 0, 0));
+        panelCOLOR = new JPanel();
+        panelFields.add(panelCOLOR);
+        panelCOLOR.setLayout(new GridLayout(0, 2, 0, 0));
 
-        lblAUTHOR = new JLabel("AUTHOR:");
-        panelAUTHOR.add(lblAUTHOR);
+        lblCOLOR = new JLabel("COLOR:");
+        panelCOLOR.add(lblCOLOR);
 
-        txtAUTHOR = new JTextField();
-        panelAUTHOR.add(txtAUTHOR);
-        txtAUTHOR.setColumns(10);
+        txtCOLOR = new JTextField();
+        panelCOLOR.add(txtCOLOR);
+        txtCOLOR.setColumns(10);
 
-        panelPUBLISHER = new JPanel();
-        panelFields.add(panelPUBLISHER);
-        panelPUBLISHER.setLayout(new GridLayout(0, 2, 0, 0));
+        panelHEIGHT = new JPanel();
+        panelFields.add(panelHEIGHT);
+        panelHEIGHT.setLayout(new GridLayout(0, 2, 0, 0));
 
-        lblPUBLISHER = new JLabel("PUBLISHER:");
-        panelPUBLISHER.add(lblPUBLISHER);
+        lblHEIGHT = new JLabel("HEIGHT:");
+        panelHEIGHT.add(lblHEIGHT);
 
-        txtPUBLISHER = new JTextField();
-        panelPUBLISHER.add(txtPUBLISHER);
-        txtPUBLISHER.setColumns(10);
+        txtHEIGHT = new JTextField();
+        panelHEIGHT.add(txtHEIGHT);
+        txtHEIGHT.setColumns(10);
 
-        panelYEAR = new JPanel();
-        panelFields.add(panelYEAR);
-        panelYEAR.setLayout(new GridLayout(0, 2, 0, 0));
+        panelWIDTH = new JPanel();
+        panelFields.add(panelWIDTH);
+        panelWIDTH.setLayout(new GridLayout(0, 2, 0, 0));
 
-        lblYEAR = new JLabel("YEAR:");
-        panelYEAR.add(lblYEAR);
+        lblWIDTH = new JLabel("WIDTH:");
+        panelWIDTH.add(lblWIDTH);
 
-        txtYEAR = new JTextField();
-        panelYEAR.add(txtYEAR);
-        txtYEAR.setColumns(10);
+        txtWIDTH = new JTextField();
+        panelWIDTH.add(txtWIDTH);
+        txtWIDTH.setColumns(10);
+
+        panelCoordinateX = new JPanel();
+        panelFields.add(panelCoordinateX);
+        panelCoordinateX.setLayout(new GridLayout(0, 2, 0, 0));
+
+        lblCoordinateX = new JLabel("Coordinate X:");
+        panelCoordinateX.add(lblCoordinateX);
+
+        txtCoordinateX = new JTextField();
+        panelCoordinateX.add(txtCoordinateX);
+        txtCoordinateX.setColumns(10);
+
+        panelCoordinateY = new JPanel();
+        panelFields.add(panelCoordinateY);
+        panelCoordinateY.setLayout(new GridLayout(0, 2, 0, 0));
+
+        lblCoordinateY = new JLabel("Coordinate Y:");
+        panelCoordinateY.add(lblCoordinateY);
+
+        txtCoordinateY = new JTextField();
+        panelCoordinateY.add(txtCoordinateY);
+        txtCoordinateY.setColumns(10);
 
         panelExtra = new JPanel();
         FlowLayout fl_panelExtra = (FlowLayout) panelExtra.getLayout();
@@ -268,9 +309,9 @@ public class GUI extends JFrame {
         checkboxAll.addActionListener(this::checkboxAllHandler);
         panelExtra.add(checkboxAll);
 
-        checkboxBibtex = new JCheckBox("Bibtex");
-        checkboxBibtex.setEnabled(false);
-        panelExtra.add(checkboxBibtex);
+        // checkboxBibtex = new JCheckBox("Bibtex");
+        // checkboxBibtex.setEnabled(false);
+        // panelExtra.add(checkboxBibtex);
 
         panelButtons = new JPanel();
         panelLeft.add(panelButtons, BorderLayout.SOUTH);
@@ -322,21 +363,27 @@ public class GUI extends JFrame {
     JLabel lblRequest;
     JComboBox<Request> comboBoxRequests;
     JPanel panelFields;
-    JPanel panelISBN;
-    JLabel lblISBN;
-    JTextField txtISBN;
-    JPanel panelTITLE;
-    JLabel lblTITLE;
-    JTextField txtTITLE;
-    JPanel panelAUTHOR;
-    JLabel lblAUTHOR;
-    JTextField txtAUTHOR;
-    JPanel panelPUBLISHER;
-    JLabel lblPUBLISHER;
-    JTextField txtPUBLISHER;
-    JPanel panelYEAR;
-    JLabel lblYEAR;
-    JTextField txtYEAR;
+    JPanel panelSTATUS;
+    JLabel lblSTATUS;
+    JTextField txtSTATUS;
+    JPanel panelMESSAGE;
+    JLabel lblMESSAGE;
+    JTextField txtMESSAGE;
+    JPanel panelCOLOR;
+    JLabel lblCOLOR;
+    JTextField txtCOLOR;
+    JPanel panelHEIGHT;
+    JLabel lblHEIGHT;
+    JTextField txtHEIGHT;
+    JPanel panelWIDTH;
+    JLabel lblWIDTH;
+    JTextField txtWIDTH;
+    JPanel panelCoordinateX;
+    JLabel lblCoordinateX;
+    JTextField txtCoordinateX;
+    JPanel panelCoordinateY;
+    JLabel lblCoordinateY;
+    JTextField txtCoordinateY;
     JPanel panelExtra;
     JCheckBox checkboxAll;
     JCheckBox checkboxBibtex;

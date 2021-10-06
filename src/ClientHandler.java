@@ -24,19 +24,19 @@ public class ClientHandler {
         clientSocket.close();
     }
 
-    private String processRequest(Request request, String ISBN, String TITLE, String AUTHOR, String PUBLISHER, int YEAR, boolean all) {
+    private String processRequest(Request request, String STATUS, String MESSAGE, String COLOR, Double HEIGHT, Double WIDTH, Double CoordinateX, Double CoordinateY, boolean all) {
         String requestData = request.name() + "\r\n";
         if (all) {
             requestData += "ALL";
         } else {
-            requestData += "ISBN " + ISBN + "\r\n" + "TITLE " + TITLE + "\r\n" + "AUTHOR " + AUTHOR + "\r\n" + "PUBLISHER " + PUBLISHER + "\r\n" + "YEAR " + YEAR + "\r\n";
+            requestData += "STATUS " + STATUS + "\r\n" + "MESSAGE " + MESSAGE + "\r\n" + "COLOR " + COLOR + "\r\n" + "HEIGHT " + HEIGHT + "\r\n" + "Coordinate X " + CoordinateX + "\r\n" + "Coordinate Y " + CoordinateY;
         }
         return requestData;
     }
 
-    public String sendMessage(Request request, String ISBN, String TITLE, String AUTHOR, String PUBLISHER, int YEAR,
+    public String sendMessage(Request request, String STATUS, String MESSAGE, String COLOR, Double HEIGHT, Double WIDTH, Double CoordinateX, Double CoordinateY,
                               boolean all, boolean bibtex) throws IOException {
-        String requestData = processRequest(request, ISBN, TITLE, AUTHOR, PUBLISHER, YEAR, all);
+        String requestData = processRequest(request, STATUS, MESSAGE, COLOR, HEIGHT, WIDTH, CoordinateX, CoordinateY, all);
         out.println(requestData + "\r\n\\EOF");
         String response = "";
         String line = in.readLine();
@@ -50,23 +50,38 @@ public class ClientHandler {
                 response = "";
                 for (String s : splitResponse) {
                     String[] splitLine = s.split(" ");
-                    if (splitLine[0].contains("ISBN:")) {
-                        response = response.concat("@BookEntry{\r\n\tISBN\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
+                    if (splitLine[0].contains("STATUS:")) {
+                        response = response.concat("@BookEntry{\r\n\tSTATUS\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
-                    if (splitLine[0].contains("TITLE:")) {
-                        response = response.concat("\tTITLE\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
+                    if (splitLine[0].contains("MESSAGE:")) {
+                        response = response.concat("\tMESSAGE\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
-                    if (splitLine[0].contains("AUTHOR:")) {
-                        response = response.concat("\tAUTHOR\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
+                    if (splitLine[0].contains("COLOR:")) {
+                        response = response.concat("\tCOLOR\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
                     }
-                    if (splitLine[0].contains("PUBLISHER:")) {
-                        response = response.concat("\tPUBLISHER\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
-                    }
-                    if (splitLine[0].contains("YEAR:")) {
+                    if (splitLine[0].contains("HEIGHT:")) {
                         if (s.substring(splitLine[0].length()).trim().equals("0"))
-                            response = response.concat("\tYEAR\t= \"No Value\",\r\n}\r\n");
+                            response = response.concat("\tHEIGHT\t= \"No Value\",\r\n}\r\n");
                         else
-                            response = response.concat("\tYEAR\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
+                            response = response.concat("\tHEIGHT\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
+                    }
+                    if (splitLine[0].contains("WIDTH:")) {
+                        if (s.substring(splitLine[0].length()).trim().equals("0"))
+                            response = response.concat("\tWIDTH\t= \"No Value\",\r\n}\r\n");
+                        else
+                            response = response.concat("\tWIDTH\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
+                    }
+                    if (splitLine[0].contains("CoordinateX:")) {
+                        if (s.substring(splitLine[0].length()).trim().equals("0"))
+                            response = response.concat("\tCoordinateX\t= \"No Value\",\r\n}\r\n");
+                        else
+                            response = response.concat("\tCoordinateX\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
+                    }
+                    if (splitLine[0].contains("CoordinateY:")) {
+                        if (s.substring(splitLine[0].length()).trim().equals("0"))
+                            response = response.concat("\tCoordinateY/\t= \"No Value\",\r\n}\r\n");
+                        else
+                            response = response.concat("\tCoordinateY\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
                     }
                 }
             }

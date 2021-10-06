@@ -12,6 +12,7 @@ public class Server {
         ArrayList<BookEntry> bookEntries = new ArrayList<BookEntry>();
         ServerSocket serverSocket = new ServerSocket(port);
         System.out.println("Server running on port " + port + ".");
+        System.out.println("IP address: " + InetAddress.getLocalHost().getHostAddress());
 
         while (true) {
             Socket clientSocket = serverSocket.accept();

@@ -1,56 +1,75 @@
 public class BookEntry {
-    private String ISBN = "";
-    private String TITLE = "";
-    private String AUTHOR = "";
-    private String PUBLISHER = "";
-    private int YEAR = 0;
+    private String STATUS = "";
+    private String MESSAGE = "";
+    private String COLOR = "";
+    private Double HEIGHT = 0.0;
+    private Double WIDTH = 0.0;
+    private Double CoordinateX = 0.0;
+    private Double CoordinateY = 0.0;
 
     @Override
     public String toString() {
-        return "ISBN: " + ISBN +
-                "\nTITLE: " + TITLE +
-                "\nAUTHOR: " + AUTHOR +
-                "\nPUBLISHER: " + PUBLISHER +
-                "\nYEAR: " + YEAR + "\r\n";
+        return "STATUS: " + STATUS +
+                "MESSAGE: " + MESSAGE +
+                "\nCOLOR: " + COLOR +
+                "\nHEIGHT: " + HEIGHT +
+                "\nWIDTH: " + WIDTH +
+                "\nLower Coordinates (X,Y): " + CoordinateX + "," + CoordinateY + "\r\n";
     }
 
-    public String getISBN() {
-        return ISBN;
+    public String getSTATUS() {
+        return STATUS;
     }
 
-    public void setISBN(String ISBN) {
-        this.ISBN = ISBN;
+    public void setSTATUS(String STATUS) {
+        this.STATUS = STATUS;
     }
 
-    public String getTITLE() {
-        return TITLE;
+    public String getMESSAGE() {
+        return MESSAGE;
     }
 
-    public void setTITLE(String TITLE) {
-        this.TITLE = TITLE;
+    public void setMESSAGE(String MESSAGE) {
+        this.MESSAGE = MESSAGE;
     }
 
-    public String getAUTHOR() {
-        return AUTHOR;
+    public String getCOLOR() {
+        return COLOR;
     }
 
-    public void setAUTHOR(String AUTHOR) {
-        this.AUTHOR = AUTHOR;
+    public void setCOLOR(String COLOR) {
+        this.COLOR = COLOR;
     }
 
-    public String getPUBLISHER() {
-        return PUBLISHER;
+    public Double getHEIGHT() {
+        return HEIGHT;
     }
 
-    public void setPUBLISHER(String PUBLISHER) {
-        this.PUBLISHER = PUBLISHER;
+    public void setHEIGHT(Double HEIGHT) {
+        this.HEIGHT = HEIGHT;
     }
 
-    public int getYEAR() {
-        return YEAR;
+    public Double getWIDTH() {
+        return WIDTH;
     }
 
-    public void setYEAR(int YEAR) {
-        this.YEAR = YEAR;
+    public void setWIDTH(Double WIDTH) {
+        this.WIDTH = WIDTH;
+    }
+
+    public Double getCoordinateX() {
+        return CoordinateX;
+    }
+
+    public void setCoordinateX(Double CoordinateX) {
+        this.CoordinateX = CoordinateX;
+    }
+
+    public Double getCoordinateY() {
+        return CoordinateY;
+    }
+
+    public void setCoordinateY(Double CoordinateY) {
+        this.CoordinateX = CoordinateY;
     }
 }

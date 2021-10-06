@@ -49,27 +49,32 @@ public class ServerThread extends Thread {
             String[] words = line.split(" ");
             String value;
             switch (words[0]) {
-                case "ISBN":
-                    if (Util.findByISBN(bookEntries, words[1]) != null) {
+                case "STATUS":
+                    if (Util.findBySTATUS(bookEntries, words[1]) != null) {
                         message = "ERROR: Book already exists";
                         return message;
                     }
-                    bookEntry.setISBN(words[1]);
+                    bookEntry.setSTATUS(words[1]);
                     break;
-                case "TITLE":
+                case "MESSAGE":
                     value = line.substring(words[0].length()).trim();
-                    bookEntry.setTITLE(value);
+                    bookEntry.setMESSAGE(value);
                     break;
-                case "AUTHOR":
+                case "COLOR":
                     value = line.substring(words[0].length()).trim();
-                    bookEntry.setAUTHOR(value);
+                    bookEntry.setCOLOR(value);
                     break;
-                case "PUBLISHER":
-                    value = line.substring(words[0].length()).trim();
-                    bookEntry.setPUBLISHER(value);
+                case "HEIGHT":
+                    bookEntry.setHEIGHT(Double.parseDouble(words[1]));
                     break;
-                case "YEAR":
-                    bookEntry.setYEAR(Integer.parseInt(words[1]));
+                case "WIDTH":
+                    bookEntry.setWIDTH(Double.parseDouble(words[1]));
+                    break;
+                case "Coordinate X":
+                    bookEntry.setCoordinateX(Double.parseDouble(words[1]));
+                    break;
+                case "Coordinate Y":
+                    bookEntry.setCoordinateY(Double.parseDouble(words[1]));
                     break;
                 default:
                     break;
@@ -96,25 +101,33 @@ public class ServerThread extends Thread {
                         message.append("\r\n");
                     }
                     return message.toString();
-                case "ISBN":
+                case "STATUS":
                     if (value.length() > 0)
                         bookEntriesList.add(Util.findByAttribute(bookEntries, "ISBN", value));
                     break;
-                case "TITLE":
+                case "MESSAGE":
                     if (value.length() > 0)
                         bookEntriesList.add(Util.findByAttribute(bookEntries, "TITLE", value));
                     break;
-                case "AUTHOR":
+                case "COLOR":
                     if (value.length() > 0)
                         bookEntriesList.add(Util.findByAttribute(bookEntries, "AUTHOR", value));
                     break;
-                case "PUBLISHER":
-                    if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "PUBLISHER", value));
+                case "HEIGHT":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "HEIGHT", value));
                     break;
-                case "YEAR":
-                    if (Integer.parseInt(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "YEAR", value));
+                case "WIDTH":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "WIDTH", value));
+                    break;
+                case "Coordinate X":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate X", value));
+                    break;
+                case "Coordinate Y":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate Y", value));
                     break;
             }
         }
@@ -137,26 +150,37 @@ public class ServerThread extends Thread {
             String[] words = line.split(" ");
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
-                case "ISBN":
-                    foundBook = Util.findByISBN(bookEntries, value);
+                case "STATUS":
+                    foundBook = Util.findBySTATUS(bookEntries, value);
                     break;
-                case "TITLE":
+                case "MESSAGE":
                     if (foundBook != null && value.length() > 0)
-                        foundBook.setTITLE(value);
+                        foundBook.setMESSAGE(value);
                     break;
-                case "AUTHOR":
+                case "COLOR":
                     if (foundBook != null && value.length() > 0)
-                        foundBook.setAUTHOR(value);
+                        foundBook.setCOLOR(value);
 
                     break;
-                case "PUBLISHER":
+                case "HEIGHT":
                     if (foundBook != null && value.length() > 0)
-                        foundBook.setPUBLISHER(value);
+                        if (Double.parseDouble(value) != 0)
+                            foundBook.setHEIGHT(Double.parseDouble(value));
                     break;
-                case "YEAR":
+                case "WIDTH":
                     if (foundBook != null && value.length() > 0)
-                        if (Integer.parseInt(value) != 0)
-                            foundBook.setYEAR(Integer.parseInt(value));
+                        if (Double.parseDouble(value) != 0)
+                            foundBook.setWIDTH(Double.parseDouble(value));
+                    break;
+                case "Coordinate X":
+                    if (foundBook != null && value.length() > 0)
+                        if (Double.parseDouble(value) != 0)
+                            foundBook.setCoordinateX(Double.parseDouble(value));
+                    break;
+                case "Coordinate Y":
+                    if (foundBook != null && value.length() > 0)
+                        if (Double.parseDouble(value) != 0)
+                            foundBook.setCoordinateY(Double.parseDouble(value));
                     break;
             }
         }
@@ -176,25 +200,33 @@ public class ServerThread extends Thread {
             String[] words = line.split(" ");
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
-                case "ISBN":
+                case "STATUS":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "ISBN", value));
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "STATUS", value));
                     break;
-                case "TITLE":
+                case "MESSAGE":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "TITLE", value));
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "MESSAGE", value));
                     break;
-                case "AUTHOR":
+                case "COLOR":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "AUTHOR", value));
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "COLOR", value));
                     break;
-                case "PUBLISHER":
-                    if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "PUBLISHER", value));
+                case "HEIGHT":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "HEIGHT", value));
                     break;
-                case "YEAR":
-                    if (Integer.parseInt(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "YEAR", value));
+                case "WIDTH":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "WIDTH", value));
+                    break;
+                case "Coordinate X":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate X", value));
+                    break;
+                case "Coordinate Y":
+                    if (Double.parseDouble(value) > 0)
+                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate Y", value));
                     break;
             }
         }
