@@ -9,9 +9,9 @@ public class GUI extends JFrame {
     private final ClientHandler clientHandler;
 
     public GUI() {
-        setTitle("CP372 Assignment 1");
+        setTitle("CP372 Assignment 1 - Group 10");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 800, 500);
+        setBounds(100, 100, 800, 600);
         clientHandler = new ClientHandler();
         initComponents();
     }
@@ -106,39 +106,37 @@ public class GUI extends JFrame {
                     }
                 // Handle All Get request
                 if (comboBoxRequests.getSelectedItem() == Request.GET && checkboxAll.isSelected()) {
-                    txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", 0.0, 0.0, 0.0, 0.0, true, checkboxBibtex.isSelected()));
+                    txtOutput.setText(clientHandler.sendMessage(Request.GET, "", "", "", 0.0, 0.0, 0.0, 0.0, true));
                     return;
                 }
 
                 STATUS = txtSTATUS.getText().replace("-", "").trim();
 
-                if (comboBoxRequests.getSelectedItem() == Request.SUBMIT || comboBoxRequests.getSelectedItem() == Request.UPDATE)
+                if (comboBoxRequests.getSelectedItem() == Request.POST || comboBoxRequests.getSelectedItem() == Request.UPDATE)
                     if (STATUS.length() == 0) {
                         JOptionPane.showMessageDialog(this, "Please enter a Status (Pinned/Unpinned)", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 // Check if GET request and empty fields
-                if (comboBoxRequests.getSelectedItem() == Request.GET || comboBoxRequests.getSelectedItem() == Request.REMOVE)
+                if (comboBoxRequests.getSelectedItem() == Request.GET || comboBoxRequests.getSelectedItem() == Request.CLEAR)
                     if (STATUS.length() == 0 && MESSAGE.length() == 0 && COLOR.length() == 0 && HEIGHT == 0 && WIDTH ==0 && CoordinateX == 0 && CoordinateY == 0) {
                         JOptionPane.showMessageDialog(this, "Please enter a field to search ", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                if (comboBoxRequests.getSelectedItem() == Request.REMOVE) {
-                    int response = JOptionPane.showConfirmDialog(this, "Remove Confirmation");
+                if (comboBoxRequests.getSelectedItem() == Request.CLEAR) {
+                    int response = JOptionPane.showConfirmDialog(this, "Board Cleared Confirmation");
                     if (response == JOptionPane.NO_OPTION || response == JOptionPane.CANCEL_OPTION) {
                         return;
                     }
                 }
-
                 
-                // If ISBN was left blank, let user continue
-                if (STATUS.length() == 0)
-                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), STATUS, MESSAGE, COLOR, HEIGHT, WIDTH, CoordinateX, CoordinateY, false, checkboxBibtex.isSelected()));
-                else
-                    JOptionPane.showMessageDialog(this, "Invalid Status", "Error", JOptionPane.ERROR_MESSAGE);
-            } catch (NumberFormatException exception) {
-                JOptionPane.showMessageDialog(this, "Invalid Status", "Error", JOptionPane.ERROR_MESSAGE);
+                
+                if (STATUS.equalsIgnoreCase("Pinned")||STATUS.equalsIgnoreCase("Unpinned")){
+                    txtOutput.setText(clientHandler.sendMessage((Request) comboBoxRequests.getSelectedItem(), STATUS, MESSAGE, COLOR, HEIGHT, WIDTH, CoordinateX, CoordinateY, false));
+                }else
+                    System.out.print("hi");
+                   //JOptionPane.showMessageDialog(this, "Invalid Status", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -148,8 +146,8 @@ public class GUI extends JFrame {
     }
 
     private void connectDialog() {
-        txtIPAddress = new JTextField("127.0.0.1"); //TODO Remove default
-        txtPort = new JTextField("3000"); //TODO Remove default
+        txtIPAddress = new JTextField(""); 
+        txtPort = new JTextField(""); 
         Object[] fields = {"IP Address", txtIPAddress, "Port Number", txtPort};
         Object[] options = {"Connect", "Exit"};
         int option = JOptionPane.showOptionDialog(this, fields, "Connect to Server", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
@@ -176,17 +174,14 @@ public class GUI extends JFrame {
         panelParent = new JPanel();
         panelParent.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(panelParent);
-        panelParent.setLayout(new BorderLayout(0, 0));
+        panelParent.setLayout(new BorderLayout(5, 5));
 
         panelHeader = new JPanel();
         panelHeader.setBorder(new EmptyBorder(5, 10, 20, 10));
         panelParent.add(panelHeader, BorderLayout.NORTH);
         panelHeader.setLayout(new BorderLayout(0, 0));
 
-        lblNames = new JLabel("<html>Mandeep Sran<br />Matthew Paek</html>");
-        panelHeader.add(lblNames, BorderLayout.WEST);
-
-        lblTitle = new JLabel("CP372: Assignment 1");
+        lblTitle = new JLabel("CP372 Assignment 1 - Group 10");
         lblTitle.setFont(new Font("Serif", Font.PLAIN, 18));
         lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
         panelHeader.add(lblTitle, BorderLayout.CENTER);
@@ -224,7 +219,7 @@ public class GUI extends JFrame {
 
         panelSTATUS = new JPanel();
         panelFields.add(panelSTATUS);
-        panelSTATUS.setLayout(new GridLayout(0, 2, 0, 0));
+        panelSTATUS.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblSTATUS = new JLabel("STATUS:");
         panelSTATUS.add(lblSTATUS);
@@ -235,7 +230,7 @@ public class GUI extends JFrame {
 
         panelMESSAGE = new JPanel();
         panelFields.add(panelMESSAGE);
-        panelMESSAGE.setLayout(new GridLayout(0, 2, 0, 0));
+        panelMESSAGE.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblMESSAGE = new JLabel("MESSAGE:");
         panelMESSAGE.add(lblMESSAGE);
@@ -246,7 +241,7 @@ public class GUI extends JFrame {
 
         panelCOLOR = new JPanel();
         panelFields.add(panelCOLOR);
-        panelCOLOR.setLayout(new GridLayout(0, 2, 0, 0));
+        panelCOLOR.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblCOLOR = new JLabel("COLOR:");
         panelCOLOR.add(lblCOLOR);
@@ -257,7 +252,7 @@ public class GUI extends JFrame {
 
         panelHEIGHT = new JPanel();
         panelFields.add(panelHEIGHT);
-        panelHEIGHT.setLayout(new GridLayout(0, 2, 0, 0));
+        panelHEIGHT.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblHEIGHT = new JLabel("HEIGHT:");
         panelHEIGHT.add(lblHEIGHT);
@@ -268,7 +263,7 @@ public class GUI extends JFrame {
 
         panelWIDTH = new JPanel();
         panelFields.add(panelWIDTH);
-        panelWIDTH.setLayout(new GridLayout(0, 2, 0, 0));
+        panelWIDTH.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblWIDTH = new JLabel("WIDTH:");
         panelWIDTH.add(lblWIDTH);
@@ -279,7 +274,7 @@ public class GUI extends JFrame {
 
         panelCoordinateX = new JPanel();
         panelFields.add(panelCoordinateX);
-        panelCoordinateX.setLayout(new GridLayout(0, 2, 0, 0));
+        panelCoordinateX.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblCoordinateX = new JLabel("Coordinate X:");
         panelCoordinateX.add(lblCoordinateX);
@@ -290,7 +285,7 @@ public class GUI extends JFrame {
 
         panelCoordinateY = new JPanel();
         panelFields.add(panelCoordinateY);
-        panelCoordinateY.setLayout(new GridLayout(0, 2, 0, 0));
+        panelCoordinateY.setLayout(new GridLayout(2, 0, 0, 0));
 
         lblCoordinateY = new JLabel("Coordinate Y:");
         panelCoordinateY.add(lblCoordinateY);
@@ -308,10 +303,6 @@ public class GUI extends JFrame {
         checkboxAll.setEnabled(false);
         checkboxAll.addActionListener(this::checkboxAllHandler);
         panelExtra.add(checkboxAll);
-
-        // checkboxBibtex = new JCheckBox("Bibtex");
-        // checkboxBibtex.setEnabled(false);
-        // panelExtra.add(checkboxBibtex);
 
         panelButtons = new JPanel();
         panelLeft.add(panelButtons, BorderLayout.SOUTH);
@@ -337,7 +328,7 @@ public class GUI extends JFrame {
         panelRight.setBorder(new EmptyBorder(10, 10, 10, 10));
         panelContent.add(panelRight);
 
-        lblOutput = new JLabel("Output");
+        lblOutput = new JLabel("Bulletin Board Output: ");
         lblOutput.setBorder(new EmptyBorder(0, 0, 10, 0));
         panelRight.setColumnHeaderView(lblOutput);
 
@@ -354,7 +345,6 @@ public class GUI extends JFrame {
 
     JPanel panelParent;
     JPanel panelHeader;
-    JLabel lblNames;
     JLabel lblTitle;
     JButton btnDisconnect;
     JPanel panelContent;

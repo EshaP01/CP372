@@ -1,4 +1,4 @@
-public class BookEntry {
+public class PostEntry {
     private String STATUS = "";
     private String MESSAGE = "";
     private String COLOR = "";
@@ -10,7 +10,7 @@ public class BookEntry {
     @Override
     public String toString() {
         return "STATUS: " + STATUS +
-                "MESSAGE: " + MESSAGE +
+                "\nMESSAGE: " + MESSAGE +
                 "\nCOLOR: " + COLOR +
                 "\nHEIGHT: " + HEIGHT +
                 "\nWIDTH: " + WIDTH +
@@ -70,6 +70,6 @@ public class BookEntry {
     }
 
     public void setCoordinateY(Double CoordinateY) {
-        this.CoordinateX = CoordinateY;
+        this.CoordinateY = CoordinateY;
     }
 }

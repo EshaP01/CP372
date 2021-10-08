@@ -6,12 +6,13 @@ public class ServerThread extends Thread {
     private final Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private final ArrayList<BookEntry> bookEntries;
+    private final ArrayList<PostEntry> postEntries;
 
-    public ServerThread(String name, Socket socket, ArrayList<BookEntry> bookEntries) {
+
+    public ServerThread(String name, Socket socket, ArrayList<PostEntry> postEntries) {
         super(name);
         this.socket = socket;
-        this.bookEntries = bookEntries;
+        this.postEntries = postEntries;
     }
 
     public synchronized void run() {
@@ -28,7 +29,10 @@ public class ServerThread extends Thread {
     private String processData(String[] data) {
         final String request = data[0].trim();
         switch (request) {
-            case "SUBMIT":
+            case "POST":
+                for (String d : data){
+                    System.out.println(d);
+                }
                 return handleSubmit(data);
             case "GET":
                 return handleGet(data);
@@ -37,105 +41,110 @@ public class ServerThread extends Thread {
             case "REMOVE":
                 return handleRemove(data);
             default:
-                return "ERROR: Invalid request please do one of [SUBMIT, GET, UPDATE, REMOVE]";
+                return "ERROR: Invalid request please do one of [POST, GET, UPDATE, REMOVE]";
         }
     }
 
     private String handleSubmit(String[] data) {
         String message;
-        BookEntry bookEntry = new BookEntry();
+        PostEntry postEntry = new PostEntry();
         for (String line : data) {
             line = line.trim();
             String[] words = line.split(" ");
+            
+            // for(String L:words){
+            //     System.out.println("Line Loop" + L);
+            // }
             String value;
+            System.out.println(words[0]);
             switch (words[0]) {
                 case "STATUS":
-                    if (Util.findBySTATUS(bookEntries, words[1]) != null) {
-                        message = "ERROR: Book already exists";
-                        return message;
-                    }
-                    bookEntry.setSTATUS(words[1]);
+                    postEntry.setSTATUS(words[1]);
                     break;
                 case "MESSAGE":
+                    if (Util.findByMESSAGE(postEntries, words[1]) != null) {
+                        message = "ERROR: Post already exists";
+                        return message;
+                    }
                     value = line.substring(words[0].length()).trim();
-                    bookEntry.setMESSAGE(value);
+                    postEntry.setMESSAGE(value);
                     break;
                 case "COLOR":
                     value = line.substring(words[0].length()).trim();
-                    bookEntry.setCOLOR(value);
+                    postEntry.setCOLOR(value);
                     break;
                 case "HEIGHT":
-                    bookEntry.setHEIGHT(Double.parseDouble(words[1]));
+                    postEntry.setHEIGHT(Double.parseDouble(words[1]));
                     break;
                 case "WIDTH":
-                    bookEntry.setWIDTH(Double.parseDouble(words[1]));
+                    postEntry.setWIDTH(Double.parseDouble(words[1]));
                     break;
-                case "Coordinate X":
-                    bookEntry.setCoordinateX(Double.parseDouble(words[1]));
+                case "CoordinateX":
+                    postEntry.setCoordinateX(Double.parseDouble(words[1]));
                     break;
-                case "Coordinate Y":
-                    bookEntry.setCoordinateY(Double.parseDouble(words[1]));
+                case "CoordinateY":
+                    postEntry.setCoordinateY(Double.parseDouble(words[1]));
                     break;
                 default:
                     break;
             }
         }
-        message = "-----Successfully added-----\n" + bookEntry.toString();
-        bookEntries.add(bookEntry);
+        message = "-----Successfully added-----\n" + postEntry.toString();
+        postEntries.add(postEntry);
         return message;
     }
 
     private String handleGet(String[] data) {
         StringBuilder message = new StringBuilder();
-        ArrayList<ArrayList<BookEntry>> bookEntriesList = new ArrayList<>();
+        ArrayList<ArrayList<PostEntry>> postEntriesList = new ArrayList<>();
         for (String line : data) {
             line = line.trim();
             String[] words = line.split(" ");
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
                 case "ALL":
-                    if (bookEntries.size() == 0)
-                        return "No books found.";
-                    for (BookEntry bookEntry : bookEntries) {
-                        message.append(bookEntry.toString());
+                    if (postEntries.size() == 0)
+                        return "No posts found.";
+                    for (PostEntry postEntry : postEntries) {
+                        message.append(postEntry.toString());
                         message.append("\r\n");
                     }
                     return message.toString();
                 case "STATUS":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "ISBN", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "STATUS", value));
                     break;
                 case "MESSAGE":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "TITLE", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "MESSAGE", value));
                     break;
                 case "COLOR":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "AUTHOR", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "COLOR", value));
                     break;
                 case "HEIGHT":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "HEIGHT", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "HEIGHT", value));
                     break;
                 case "WIDTH":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "WIDTH", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "WIDTH", value));
                     break;
-                case "Coordinate X":
+                case "CoordinateX":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate X", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "Coordinate X", value));
                     break;
-                case "Coordinate Y":
+                case "CoordinateY":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate Y", value));
+                        postEntriesList.add(Util.findByAttribute(postEntries, "Coordinate Y", value));
                     break;
             }
         }
-        ArrayList<BookEntry> intersection = Util.intersection(bookEntriesList);
+        ArrayList<PostEntry> intersection = Util.intersection(postEntriesList);
         if (intersection == null)
-            return "No books found.";
-        for (BookEntry bookEntry : intersection) {
-            message.append(bookEntry.toString());
+            return "No Posts Found.";
+        for (PostEntry postEntry : intersection) {
+            message.append(postEntry.toString());
             message.append("\r\n");
         }
 
@@ -144,57 +153,57 @@ public class ServerThread extends Thread {
 
     private String handleUpdate(String[] data) {
         String message;
-        BookEntry foundBook = null;
+        PostEntry foundPost = null;
         for (String line : data) {
             line = line.trim();
             String[] words = line.split(" ");
             String value = line.substring(words[0].length()).trim();
             switch (words[0]) {
                 case "STATUS":
-                    foundBook = Util.findBySTATUS(bookEntries, value);
+                    foundPost = Util.findBySTATUS(postEntries, value);
                     break;
                 case "MESSAGE":
-                    if (foundBook != null && value.length() > 0)
-                        foundBook.setMESSAGE(value);
+                    if (foundPost != null && value.length() > 0)
+                        foundPost.setMESSAGE(value);
                     break;
                 case "COLOR":
-                    if (foundBook != null && value.length() > 0)
-                        foundBook.setCOLOR(value);
+                    if (foundPost != null && value.length() > 0)
+                        foundPost.setCOLOR(value);
 
                     break;
                 case "HEIGHT":
-                    if (foundBook != null && value.length() > 0)
+                    if (foundPost != null && value.length() > 0)
                         if (Double.parseDouble(value) != 0)
-                            foundBook.setHEIGHT(Double.parseDouble(value));
+                            foundPost.setHEIGHT(Double.parseDouble(value));
                     break;
                 case "WIDTH":
-                    if (foundBook != null && value.length() > 0)
+                    if (foundPost != null && value.length() > 0)
                         if (Double.parseDouble(value) != 0)
-                            foundBook.setWIDTH(Double.parseDouble(value));
+                            foundPost.setWIDTH(Double.parseDouble(value));
                     break;
-                case "Coordinate X":
-                    if (foundBook != null && value.length() > 0)
+                case "CoordinateX":
+                    if (foundPost != null && value.length() > 0)
                         if (Double.parseDouble(value) != 0)
-                            foundBook.setCoordinateX(Double.parseDouble(value));
+                            foundPost.setCoordinateX(Double.parseDouble(value));
                     break;
-                case "Coordinate Y":
-                    if (foundBook != null && value.length() > 0)
+                case "CoordinateY":
+                    if (foundPost != null && value.length() > 0)
                         if (Double.parseDouble(value) != 0)
-                            foundBook.setCoordinateY(Double.parseDouble(value));
+                            foundPost.setCoordinateY(Double.parseDouble(value));
                     break;
             }
         }
-        if (foundBook != null)
-            message = "-----Successfully updated-----\n" + foundBook.toString();
+        if (foundPost != null)
+            message = "-----Successfully updated-----\n" + foundPost.toString();
         else
-            message = "ERROR: The book does not exist";
+            message = "ERROR: The post does not exist";
         return message;
     }
 
     private String handleRemove(String[] data) {
         String message;
         int removedCount = 0;
-        ArrayList<ArrayList<BookEntry>> bookEntriesList = new ArrayList<>();
+        ArrayList<ArrayList<PostEntry>> bookEntriesList = new ArrayList<>();
         for (String line : data) {
             line = line.trim();
             String[] words = line.split(" ");
@@ -202,38 +211,38 @@ public class ServerThread extends Thread {
             switch (words[0]) {
                 case "STATUS":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "STATUS", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "STATUS", value));
                     break;
                 case "MESSAGE":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "MESSAGE", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "MESSAGE", value));
                     break;
                 case "COLOR":
                     if (value.length() > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "COLOR", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "COLOR", value));
                     break;
                 case "HEIGHT":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "HEIGHT", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "HEIGHT", value));
                     break;
                 case "WIDTH":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "WIDTH", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "WIDTH", value));
                     break;
-                case "Coordinate X":
+                case "CoordinateX":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate X", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "Coordinate X", value));
                     break;
-                case "Coordinate Y":
+                case "CoordinateY":
                     if (Double.parseDouble(value) > 0)
-                        bookEntriesList.add(Util.findByAttribute(bookEntries, "Coordinate Y", value));
+                        bookEntriesList.add(Util.findByAttribute(postEntries, "Coordinate Y", value));
                     break;
             }
         }
-        ArrayList<BookEntry> intersection = Util.intersection(bookEntriesList);
+        ArrayList<PostEntry> intersection = Util.intersection(bookEntriesList);
         if (intersection != null)
-            for (BookEntry bookEntry : intersection) {
-                bookEntries.remove(bookEntry);
+            for (PostEntry postEntry : intersection) {
+                postEntries.remove(postEntry);
                 removedCount++;
             }
         message = "Removed " + removedCount + " books";

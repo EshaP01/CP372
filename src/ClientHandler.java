@@ -29,13 +29,13 @@ public class ClientHandler {
         if (all) {
             requestData += "ALL";
         } else {
-            requestData += "STATUS " + STATUS + "\r\n" + "MESSAGE " + MESSAGE + "\r\n" + "COLOR " + COLOR + "\r\n" + "HEIGHT " + HEIGHT + "\r\n" + "Coordinate X " + CoordinateX + "\r\n" + "Coordinate Y " + CoordinateY;
+            requestData += "STATUS " + STATUS + "\r\n" + "MESSAGE " + MESSAGE + "\r\n" + "COLOR " + COLOR + "\r\n" + "HEIGHT " + HEIGHT + "\r\n" + "WIDTH " + WIDTH + "\r\n" + "CoordinateX " + CoordinateX + "\r\n" + "CoordinateY " + CoordinateY;
         }
         return requestData;
     }
 
     public String sendMessage(Request request, String STATUS, String MESSAGE, String COLOR, Double HEIGHT, Double WIDTH, Double CoordinateX, Double CoordinateY,
-                              boolean all, boolean bibtex) throws IOException {
+    boolean all) throws IOException {
         String requestData = processRequest(request, STATUS, MESSAGE, COLOR, HEIGHT, WIDTH, CoordinateX, CoordinateY, all);
         out.println(requestData + "\r\n\\EOF");
         String response = "";
@@ -44,50 +44,11 @@ public class ClientHandler {
             response = response.concat(line + "\r\n");
             line = in.readLine();
         }
-        if (bibtex) {
-            String[] splitResponse = response.split("\r\n");
-            if (splitResponse.length > 2) {
-                response = "";
-                for (String s : splitResponse) {
-                    String[] splitLine = s.split(" ");
-                    if (splitLine[0].contains("STATUS:")) {
-                        response = response.concat("@BookEntry{\r\n\tSTATUS\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
-                    }
-                    if (splitLine[0].contains("MESSAGE:")) {
-                        response = response.concat("\tMESSAGE\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
-                    }
-                    if (splitLine[0].contains("COLOR:")) {
-                        response = response.concat("\tCOLOR\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n");
-                    }
-                    if (splitLine[0].contains("HEIGHT:")) {
-                        if (s.substring(splitLine[0].length()).trim().equals("0"))
-                            response = response.concat("\tHEIGHT\t= \"No Value\",\r\n}\r\n");
-                        else
-                            response = response.concat("\tHEIGHT\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
-                    }
-                    if (splitLine[0].contains("WIDTH:")) {
-                        if (s.substring(splitLine[0].length()).trim().equals("0"))
-                            response = response.concat("\tWIDTH\t= \"No Value\",\r\n}\r\n");
-                        else
-                            response = response.concat("\tWIDTH\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
-                    }
-                    if (splitLine[0].contains("CoordinateX:")) {
-                        if (s.substring(splitLine[0].length()).trim().equals("0"))
-                            response = response.concat("\tCoordinateX\t= \"No Value\",\r\n}\r\n");
-                        else
-                            response = response.concat("\tCoordinateX\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
-                    }
-                    if (splitLine[0].contains("CoordinateY:")) {
-                        if (s.substring(splitLine[0].length()).trim().equals("0"))
-                            response = response.concat("\tCoordinateY/\t= \"No Value\",\r\n}\r\n");
-                        else
-                            response = response.concat("\tCoordinateY\t= \"" + s.substring(splitLine[0].length()).trim() + "\",\r\n}\r\n");
-                    }
-                }
-            }
-        }
+
         return response;
-    }
+        
+        }
+  
 
     public boolean isConnected() {
         try {
@@ -97,5 +58,4 @@ public class ClientHandler {
             return false;
         }
     }
-
 }

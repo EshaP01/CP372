@@ -1,6 +1,6 @@
 public enum Request {
-    SUBMIT,
+    POST,
     GET,
     UPDATE,
-    REMOVE
+    CLEAR
 }

@@ -2,40 +2,39 @@ import java.util.ArrayList;
 
 public class Util {
 
-    public static ArrayList<BookEntry> findByAttribute(ArrayList<BookEntry> bookEntries, String attribute, String value) {
-        ArrayList<BookEntry> foundSet = new ArrayList<>();
-        for (BookEntry bookEntry : bookEntries) {
+    public static ArrayList<PostEntry> findByAttribute(ArrayList<PostEntry> postEntries, String attribute, String value) {
+        ArrayList<PostEntry> foundSet = new ArrayList<>();
+        for (PostEntry postEntry : postEntries) {
             switch (attribute) {
                 case "STATUS":
-                    if (bookEntry.getSTATUS().equals(value))
-                        foundSet.add(bookEntry);
+                    if (postEntry.getSTATUS().equals(value))
+                        foundSet.add(postEntry);
                     break;
                 case "MESSAGE":
-                    if (bookEntry.getMESSAGE().equals(value))
-                        foundSet.add(bookEntry);
+                    if (postEntry.getMESSAGE().equals(value))
+                        foundSet.add(postEntry);
                     break;
                 case "COLOR":
-                    if (bookEntry.getCOLOR().equals(value))
-                        foundSet.add(bookEntry);
+                    if (postEntry.getCOLOR().equals(value))
+                        foundSet.add(postEntry);
                     break;
                 case "HEIGHT":
-                    if (bookEntry.getHEIGHT().equals(value))
-                        foundSet.add(bookEntry);
-                    // if (Double.toString(bookEntry.getWIDTH()).equals(value))
-                    //     foundSet.add(bookEntry);
+                    if (postEntry.getHEIGHT().equals(value))
+                        foundSet.add(postEntry);
                     break;
                 case "WIDTH":
-                    if (Double.toString(bookEntry.getWIDTH()).equals(value))
-                        foundSet.add(bookEntry);
+                    if (postEntry.getWIDTH().equals(value))
+                    foundSet.add(postEntry);
                     break;
+
                 case "CoordinateX":
-                    if (Double.toString(bookEntry.getCoordinateX()).equals(value))
-                        foundSet.add(bookEntry);
+                    if (postEntry.getCoordinateX().equals(value))
+                        foundSet.add(postEntry);
                     break;
 
                 case "CoordinateY":
-                    if (Double.toString(bookEntry.getCoordinateY()).equals(value))
-                        foundSet.add(bookEntry);
+                    if (postEntry.getCoordinateX().equals(value))
+                        foundSet.add(postEntry);
                     break;
                 default:
                     break;
@@ -46,21 +45,28 @@ public class Util {
         return foundSet;
     }
 
-    public static BookEntry findBySTATUS(ArrayList<BookEntry> bookEntries, String STATUS) {
-        for (BookEntry bookEntry : bookEntries)
-            if (bookEntry.getSTATUS().equals(STATUS))
-                return bookEntry;
+    public static PostEntry findBySTATUS(ArrayList<PostEntry> postEntries, String STATUS) {
+        for (PostEntry postEntry : postEntries)
+            if (postEntry.getSTATUS().equals(STATUS))
+                return postEntry;
+        return null;
+    }
+
+    public static PostEntry findByMESSAGE(ArrayList<PostEntry> postEntries, String MESSAGE) {
+        for (PostEntry postEntry : postEntries)
+            if (postEntry.getMESSAGE().equals(MESSAGE))
+                return postEntry;
         return null;
     }
 
 
-    public static ArrayList<BookEntry> intersection(ArrayList<ArrayList<BookEntry>> bookEntriesList) {
-        ArrayList<BookEntry> intersection = null;
-        for (ArrayList<BookEntry> bookEntries : bookEntriesList) {
-            intersection = intersection == null ? bookEntries : intersection;
+    public static ArrayList<PostEntry> intersection(ArrayList<ArrayList<PostEntry>>postEntriesList) {
+        ArrayList<PostEntry> intersection = null;
+        for (ArrayList<PostEntry> postEntries : postEntriesList) {
+            intersection = intersection == null ? postEntries : intersection;
             if (intersection == null) break;
-            if (bookEntries != null)
-                intersection.retainAll(bookEntries);
+            if (postEntries != null)
+                intersection.retainAll(postEntries);
             else {
                 intersection = null;
                 break;
